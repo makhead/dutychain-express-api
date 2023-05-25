@@ -1,8 +1,16 @@
 # dutychain-express-api
 
 ## install dependencies
+install express api dependencies
+```
+cd web-app/servers
+npm install
 ```
 
+install react dependencies
+```
+cd web-app/client
+npm install
 ```
 
 ## Run the application
@@ -44,3 +52,14 @@ remove local wallet
 cd web-app/servers
 rm -rf wallet
 ```
+
+## Express API
+
+### Create Asset
+send a post request to localhost:4000/create
+
+### Read All Assets
+send a post request to localhost:4000/readall
+
+### Create Asset
+send a post request to localhost:4000/read
