@@ -1,5 +1,10 @@
 # dutychain-express-api
 
+## install dependencies
+```
+
+```
+
 ## Run the application
 
 Start hyperledger network
@@ -25,4 +30,17 @@ Start react client servers
 ```
 cd web-app/client
 npm start
+```
+
+## cleanup
+shutdown hyperledger node
+```
+cd test-network
+./network down
+```
+
+remove local wallet
+```
+cd web-app/servers
+rm -rf wallet
 ```

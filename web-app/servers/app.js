@@ -190,21 +190,112 @@ async function queryAll(){
 		const gateway = new Gateway();
 		const wallet = await buildWallet(Wallets, walletPath);
 		const ccp = buildCCPOrg1();
-		await gateway.connect(ccp, {
-			wallet,
-			identity: org1UserId,
-			discovery: { enabled: true, asLocalhost: true } // using asLocalhost as this gateway is using a fabric network deployed locally
-		});
+		try{
+			await gateway.connect(ccp, {
+				wallet,
+				identity: org1UserId,
+				discovery: { enabled: true, asLocalhost: true } // using asLocalhost as this gateway is using a fabric network deployed locally
+			});
+	
+			// Build a network instance based on the channel where the smart contract is deployed
+			const network = await gateway.getNetwork(channelName);
+	
+			// Get the contract from the network.
+			const contract = network.getContract(chaincodeName);
+			console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
+			let result = await contract.evaluateTransaction('GetAllAssets');
+			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			return result;
 
-		// Build a network instance based on the channel where the smart contract is deployed
-		const network = await gateway.getNetwork(channelName);
+		} finally{
+			gateway.disconnect();
+		}
+		
+	} catch(error){
+		console.error(`******** FAILED to run the application: ${error}`);
+		process.exit(1);
+	}
+}
 
-		// Get the contract from the network.
-		const contract = network.getContract(chaincodeName);
-		console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
-		let result = await contract.evaluateTransaction('GetAllAssets');
-		console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-		return result;
+async function createAsset(){
+	try{
+		const gateway = new Gateway();
+		const wallet = await buildWallet(Wallets, walletPath);
+		const ccp = buildCCPOrg1();
+		try{
+			await gateway.connect(ccp, {
+				wallet,
+				identity: org1UserId,
+				discovery: { enabled: true, asLocalhost: true } // using asLocalhost as this gateway is using a fabric network deployed locally
+			});
+	
+			// Build a network instance based on the channel where the smart contract is deployed
+			const network = await gateway.getNetwork(channelName);
+	
+			// Get the contract from the network.
+			const contract = network.getContract(chaincodeName);
+			try{
+				console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
+				let result = await contract.submitTransaction('CreateAsset', 'asset313', 'yellow', '5', 'Tom', '1300');
+				console.log('*** Result: committed');
+				if (`${result}` !== '') {
+					console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+				}
+				return result;
+
+			} catch (error) {
+				console.log(`Error: \n    ${error}`);
+				return error;
+			}
+
+			
+		} finally{
+			gateway.disconnect();
+		}
+		
+
+	}catch(error){
+		console.error(`******** FAILED to run the application: ${error}`);
+		process.exit(1);
+	}
+}
+
+async function readAsset(){
+	try{
+		const gateway = new Gateway();
+		const wallet = await buildWallet(Wallets, walletPath);
+		const ccp = buildCCPOrg1();
+
+		try{
+			await gateway.connect(ccp, {
+				wallet,
+				identity: org1UserId,
+				discovery: { enabled: true, asLocalhost: true } // using asLocalhost as this gateway is using a fabric network deployed locally
+			});
+	
+			// Build a network instance based on the channel where the smart contract is deployed
+			const network = await gateway.getNetwork(channelName);
+	
+			// Get the contract from the network.
+			const contract = network.getContract(chaincodeName);
+			try{
+				console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
+				let result = await contract.evaluateTransaction('ReadAsset', 'asset313');
+				if (`${result}` !== '') {
+					console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+				}
+				//console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+				return result;
+				
+			} catch(error){
+				console.log(`Error: \n    ${error}`);
+				return error;
+			}
+
+		} finally{
+			gateway.disconnect();
+		}
+		
 
 	}catch(error){
 		console.error(`******** FAILED to run the application: ${error}`);
@@ -215,18 +306,59 @@ async function queryAll(){
 main();
 
 
-app.get('/',function(req, res){
-	console.log('incoming get request', req.ip);
-	res.setHeader("Content-Type","application/json");
-	res.send(JSON.stringify({"data":"return post data"}));
-})
-
-app.post('/',function(req, res){
-	console.log('incoming post request', req.body, req.body.username, req.body.data);
-	
-	// post 
+app.get('/readall',function(req, res){
+	console.log('incoming get readall request');
 
 	queryAll().then(result => {
+		res.setHeader("Content-Type","application/json");
+		res.send(JSON.stringify({"data":result.toString()}));
+	});
+})
+
+app.post('/readall',function(req, res){
+	console.log('incoming post readall request');
+
+	queryAll().then(result => {
+		res.setHeader("Content-Type","application/json");
+		res.send(JSON.stringify({"data":result.toString()}));
+	});
+	
+	//res.sendStatus(200)
+})
+
+app.get('/create',function(req, res){
+	console.log('incoming get create request', req.body, req.body.username, req.body.data);
+
+	createAsset().then(result => {
+		res.setHeader("Content-Type","application/json");
+		res.send(JSON.stringify({"data":result.toString()}));
+	});
+})
+
+app.post('/create',function(req, res){
+	console.log('incoming post create request', req.body, req.body.username, req.body.data);
+
+	createAsset().then(result => {
+		res.setHeader("Content-Type","application/json");
+		res.send(JSON.stringify({"data":result.toString()}));
+	});
+	
+	//res.sendStatus(200)
+})
+
+app.get('/read',function(req, res){
+	console.log('incoming get read request', req.body, req.body.username, req.body.data);
+
+	readAsset().then(result => {
+		res.setHeader("Content-Type","application/json");
+		res.send(JSON.stringify({"data":result.toString()}));
+	});
+})
+
+app.post('/read',function(req, res){
+	console.log('incoming post read request', req.body, req.body.username, req.body.data);
+
+	readAsset().then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});
