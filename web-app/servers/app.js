@@ -217,7 +217,7 @@ async function queryAll(){
 	}
 }
 
-async function createAsset(ID,Color,Size,Owner,AppraisedValue){
+async function createAsset(ID,data){
 	try{
 		const gateway = new Gateway();
 		const wallet = await buildWallet(Wallets, walletPath);
@@ -236,11 +236,12 @@ async function createAsset(ID,Color,Size,Owner,AppraisedValue){
 			const contract = network.getContract(chaincodeName);
 			try{
 				console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
-				let result = await contract.submitTransaction('CreateAsset', ID, Color, Size, Owner, AppraisedValue);
+				let result = await contract.submitTransaction('CreateAsset', ID, JSON.stringify(data));
 				console.log('*** Result: committed');
 				if (`${result}` !== '') {
-					console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+					console.log(`*** Result: ${prettyJSONString(result)}`);
 				}
+				//return prettyJSONString(result);
 				return result;
 
 			} catch (error) {
@@ -328,11 +329,11 @@ app.post('/readall',function(req, res){
 
 app.get('/create',function(req, res){
 	console.log('incoming post read request body', req.body);
-	console.log('incoming post read request ID', req.body.ID);
-	console.log('incoming post read request data', req.body.data);
+	//console.log('incoming post read request ID', req.body);
+	//console.log('incoming post read request data', req.body.data);
 
 
-	createAsset(req.body.ID,req.body.Color, req.body.Size, req.body.Owner,req.body.AppraisedValue).then(result => {
+	createAsset(req.body.ID,JSON.stringify(req.body.data)).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});
@@ -340,11 +341,10 @@ app.get('/create',function(req, res){
 
 app.post('/create',function(req, res){
 	console.log('incoming post read request body', req.body);
-	console.log('incoming post read request ID', req.body.ID);
-	console.log('incoming post read request data', req.body.data);
+	//console.log('incoming post read request ID', req.body.ID);
+	//console.log('incoming post read request data', req.body.data);
 
-
-	createAsset(req.body.ID,req.body.Color, req.body.Size, req.body.Owner,req.body.AppraisedValue).then(result => {
+	createAsset(req.body.ID,req.body.data).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});

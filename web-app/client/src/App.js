@@ -44,11 +44,13 @@ function App() {
         "Content-Type":"application/json"
       },
       body: JSON.stringify({
-        ID: "1",
-        Color: "Blue",
-        Size: 5,
-        Owner: 'Tomoko',
-        AppraisedValue: 300,
+        ID: "4",
+        data:{
+          Color: "Blue",
+          Size: 5,
+          Owner: 'Tomoko',
+          AppraisedValue: 300,
+        }
       })
     })
     .then((response) => {

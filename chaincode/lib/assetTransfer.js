@@ -17,46 +17,31 @@ class AssetTransfer extends Contract {
         const assets = [
             {
                 ID: 'asset1',
-                Color: 'blue',
-                Size: 5,
-                Owner: 'Tomoko',
-                AppraisedValue: 300,
+                data:{
+                    Color: 'blue',
+                    Size: 5,
+                    Owner: 'Tomoko',
+                    AppraisedValue: 300,
+                }
             },
             {
                 ID: 'asset2',
-                Color: 'red',
-                Size: 5,
-                Owner: 'Brad',
-                AppraisedValue: 400,
+                data:{
+                    Color: 'red',
+                    Size: 5,
+                    Owner: 'Brad',
+                    AppraisedValue: 400,
+                }
             },
             {
                 ID: 'asset3',
-                Color: 'green',
-                Size: 10,
-                Owner: 'Jin Soo',
-                AppraisedValue: 500,
-            },
-            {
-                ID: 'asset4',
-                Color: 'yellow',
-                Size: 10,
-                Owner: 'Max',
-                AppraisedValue: 600,
-            },
-            {
-                ID: 'asset5',
-                Color: 'black',
-                Size: 15,
-                Owner: 'Adriana',
-                AppraisedValue: 700,
-            },
-            {
-                ID: 'asset6',
-                Color: 'white',
-                Size: 15,
-                Owner: 'Michel',
-                AppraisedValue: 800,
-            },
+                data:{
+                    Color: 'green',
+                    Size: 10,
+                    Owner: 'Jin Soo',
+                    AppraisedValue: 500,
+                }
+            }
         ];
 
         for (const asset of assets) {
@@ -70,22 +55,22 @@ class AssetTransfer extends Contract {
     }
 
     // CreateAsset issues a new asset to the world state with given details.
-    async CreateAsset(ctx, id, color, size, owner, appraisedValue) {
-        const exists = await this.AssetExists(ctx, id);
+    async CreateAsset(ctx, ID, data) {
+        const exists = await this.AssetExists(ctx, ID);
         if (exists) {
-            throw new Error(`The asset ${id} already exists`);
+            throw new Error(`The asset ${ID} already exists`);
         }
 
+        const json_data = JSON.parse(data);
+
         const asset = {
-            ID: id,
-            Color: color,
-            Size: size,
-            Owner: owner,
-            AppraisedValue: appraisedValue,
+            ID: ID,
+            data:json_data
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
-        await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
+        await ctx.stub.putState(ID, Buffer.from(stringify(sortKeysRecursive(asset))));
         return JSON.stringify(asset);
+        //return asset.toString();
     }
 
     // ReadAsset returns the asset stored in the world state with given id.
@@ -98,19 +83,18 @@ class AssetTransfer extends Contract {
     }
 
     // UpdateAsset updates an existing asset in the world state with provided parameters.
-    async UpdateAsset(ctx, id, color, size, owner, appraisedValue) {
+    async UpdateAsset(ctx, id, data) {
         const exists = await this.AssetExists(ctx, id);
         if (!exists) {
             throw new Error(`The asset ${id} does not exist`);
         }
 
         // overwriting original asset with new asset
+        const json_data = JSON.parse(data);
+
         const updatedAsset = {
             ID: id,
-            Color: color,
-            Size: size,
-            Owner: owner,
-            AppraisedValue: appraisedValue,
+            data:json_data
         };
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         return ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(updatedAsset))));
@@ -135,8 +119,8 @@ class AssetTransfer extends Contract {
     async TransferAsset(ctx, id, newOwner) {
         const assetString = await this.ReadAsset(ctx, id);
         const asset = JSON.parse(assetString);
-        const oldOwner = asset.Owner;
-        asset.Owner = newOwner;
+        const oldOwner = asset.data.Owner;
+        asset.data.Owner = newOwner;
         // we insert data in alphabetic order using 'json-stringify-deterministic' and 'sort-keys-recursive'
         await ctx.stub.putState(id, Buffer.from(stringify(sortKeysRecursive(asset))));
         return oldOwner;
