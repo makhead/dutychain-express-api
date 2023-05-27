@@ -126,53 +126,53 @@ async function main() {
 
 			// Let's try a query type operation (function).
 			// This will be sent to just one peer and the results will be shown.
-			console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
-			let result = await contract.evaluateTransaction('GetAllAssets');
-			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
+			// let result = await contract.evaluateTransaction('GetAllAssets');
+			// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
 			// Now let's try to submit a transaction.
 			// This will be sent to both peers and if both peers endorse the transaction, the endorsed proposal will be sent
 			// to the orderer to be committed by each of the peer's to the channel ledger.
-			console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
-			result = await contract.submitTransaction('CreateAsset', 'asset313', 'yellow', '5', 'Tom', '1300');
-			console.log('*** Result: committed');
-			if (`${result}` !== '') {
-				console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-			}
+			// console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
+			// result = await contract.submitTransaction('CreateAsset', 'asset313', 'yellow', '5', 'Tom', '1300');
+			// console.log('*** Result: committed');
+			// if (`${result}` !== '') {
+			// 	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// }
 
-			console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
-			result = await contract.evaluateTransaction('ReadAsset', 'asset313');
-			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
+			// result = await contract.evaluateTransaction('ReadAsset', 'asset313');
+			// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
-			console.log('\n--> Evaluate Transaction: AssetExists, function returns "true" if an asset with given assetID exist');
-			result = await contract.evaluateTransaction('AssetExists', 'asset1');
-			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// console.log('\n--> Evaluate Transaction: AssetExists, function returns "true" if an asset with given assetID exist');
+			// result = await contract.evaluateTransaction('AssetExists', 'asset1');
+			// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
-			console.log('\n--> Submit Transaction: UpdateAsset asset1, change the appraisedValue to 350');
-			await contract.submitTransaction('UpdateAsset', 'asset1', 'blue', '5', 'Tomoko', '350');
-			console.log('*** Result: committed');
+			// console.log('\n--> Submit Transaction: UpdateAsset asset1, change the appraisedValue to 350');
+			// await contract.submitTransaction('UpdateAsset', 'asset1', 'blue', '5', 'Tomoko', '350');
+			// console.log('*** Result: committed');
 
-			console.log('\n--> Evaluate Transaction: ReadAsset, function returns "asset1" attributes');
-			result = await contract.evaluateTransaction('ReadAsset', 'asset1');
-			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// console.log('\n--> Evaluate Transaction: ReadAsset, function returns "asset1" attributes');
+			// result = await contract.evaluateTransaction('ReadAsset', 'asset1');
+			// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
-			try {
-				// How about we try a transactions where the executing chaincode throws an error
-				// Notice how the submitTransaction will throw an error containing the error thrown by the chaincode
-				console.log('\n--> Submit Transaction: UpdateAsset asset70, asset70 does not exist and should return an error');
-				await contract.submitTransaction('UpdateAsset', 'asset70', 'blue', '5', 'Tomoko', '300');
-				console.log('******** FAILED to return an error');
-			} catch (error) {
-				console.log(`*** Successfully caught the error: \n    ${error}`);
-			}
+			// try {
+			// 	// How about we try a transactions where the executing chaincode throws an error
+			// 	// Notice how the submitTransaction will throw an error containing the error thrown by the chaincode
+			// 	console.log('\n--> Submit Transaction: UpdateAsset asset70, asset70 does not exist and should return an error');
+			// 	await contract.submitTransaction('UpdateAsset', 'asset70', 'blue', '5', 'Tomoko', '300');
+			// 	console.log('******** FAILED to return an error');
+			// } catch (error) {
+			// 	console.log(`*** Successfully caught the error: \n    ${error}`);
+			// }
 
-			console.log('\n--> Submit Transaction: TransferAsset asset1, transfer to new owner of Tom');
-			await contract.submitTransaction('TransferAsset', 'asset1', 'Tom');
-			console.log('*** Result: committed');
+			// console.log('\n--> Submit Transaction: TransferAsset asset1, transfer to new owner of Tom');
+			// await contract.submitTransaction('TransferAsset', 'asset1', 'Tom');
+			// console.log('*** Result: committed');
 
-			console.log('\n--> Evaluate Transaction: ReadAsset, function returns "asset1" attributes');
-			result = await contract.evaluateTransaction('ReadAsset', 'asset1');
-			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+			// console.log('\n--> Evaluate Transaction: ReadAsset, function returns "asset1" attributes');
+			// result = await contract.evaluateTransaction('ReadAsset', 'asset1');
+			// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 		} finally {
 			// Disconnect from the gateway when the application is closing
 			// This will close all connections to the network
@@ -217,7 +217,7 @@ async function queryAll(){
 	}
 }
 
-async function createAsset(){
+async function createAsset(ID,Color,Size,Owner,AppraisedValue){
 	try{
 		const gateway = new Gateway();
 		const wallet = await buildWallet(Wallets, walletPath);
@@ -236,7 +236,7 @@ async function createAsset(){
 			const contract = network.getContract(chaincodeName);
 			try{
 				console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
-				let result = await contract.submitTransaction('CreateAsset', 'asset313', 'yellow', '5', 'Tom', '1300');
+				let result = await contract.submitTransaction('CreateAsset', ID, Color, Size, Owner, AppraisedValue);
 				console.log('*** Result: committed');
 				if (`${result}` !== '') {
 					console.log(`*** Result: ${prettyJSONString(result.toString())}`);
@@ -260,7 +260,7 @@ async function createAsset(){
 	}
 }
 
-async function readAsset(){
+async function readAsset(ID){
 	try{
 		const gateway = new Gateway();
 		const wallet = await buildWallet(Wallets, walletPath);
@@ -280,7 +280,7 @@ async function readAsset(){
 			const contract = network.getContract(chaincodeName);
 			try{
 				console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
-				let result = await contract.evaluateTransaction('ReadAsset', 'asset313');
+				let result = await contract.evaluateTransaction('ReadAsset', ID);
 				if (`${result}` !== '') {
 					console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 				}
@@ -327,18 +327,24 @@ app.post('/readall',function(req, res){
 })
 
 app.get('/create',function(req, res){
-	console.log('incoming get create request', req.body, req.body.username, req.body.data);
+	console.log('incoming post read request body', req.body);
+	console.log('incoming post read request ID', req.body.ID);
+	console.log('incoming post read request data', req.body.data);
 
-	createAsset().then(result => {
+
+	createAsset(req.body.ID,req.body.Color, req.body.Size, req.body.Owner,req.body.AppraisedValue).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});
 })
 
 app.post('/create',function(req, res){
-	console.log('incoming post create request', req.body, req.body.username, req.body.data);
+	console.log('incoming post read request body', req.body);
+	console.log('incoming post read request ID', req.body.ID);
+	console.log('incoming post read request data', req.body.data);
 
-	createAsset().then(result => {
+
+	createAsset(req.body.ID,req.body.Color, req.body.Size, req.body.Owner,req.body.AppraisedValue).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});
@@ -347,18 +353,21 @@ app.post('/create',function(req, res){
 })
 
 app.get('/read',function(req, res){
-	console.log('incoming get read request', req.body, req.body.username, req.body.data);
+	console.log('incoming post read request body', req.body);
+	console.log('incoming post read request ID', req.body.ID);
 
-	readAsset().then(result => {
+
+	readAsset(req.body.ID).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});
 })
 
 app.post('/read',function(req, res){
-	console.log('incoming post read request', req.body, req.body.username, req.body.data);
+	console.log('incoming post read request body', req.body);
+	console.log('incoming post read request ID', req.body.ID);
 
-	readAsset().then(result => {
+	readAsset(req.body.ID).then(result => {
 		res.setHeader("Content-Type","application/json");
 		res.send(JSON.stringify({"data":result.toString()}));
 	});

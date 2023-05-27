@@ -44,8 +44,11 @@ function App() {
         "Content-Type":"application/json"
       },
       body: JSON.stringify({
-        username:"Tom",
-        data:"123"
+        ID: "1",
+        Color: "Blue",
+        Size: 5,
+        Owner: 'Tomoko',
+        AppraisedValue: 300,
       })
     })
     .then((response) => {
@@ -75,8 +78,7 @@ function App() {
         "Content-Type":"application/json"
       },
       body: JSON.stringify({
-        username:"Tom",
-        data:"123"
+        ID:"1"
       })
     })
     .then((response) => {
