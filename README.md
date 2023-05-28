@@ -54,12 +54,34 @@ rm -rf wallet
 ```
 
 ## Express API
+### Asset structure:
+require a json, with an ID field and data field
+
+ID requires to be unique
+
+data field need to be a json structure
+
+Example:
+```
+{
+    ID: "4",
+    data:{
+        Color: "Blue",
+        Size: 5,
+        Owner: 'Tomoko',
+        AppraisedValue: 300,
+    }
+}
+```
+
 
 ### Create Asset
 send a post request to localhost:4000/create
+with a json with ID field and data field in the post body
 
 ### Read All Assets
 send a post request to localhost:4000/readall
 
 ### Create Asset
 send a post request to localhost:4000/read
+with a json with ID field in the post body
