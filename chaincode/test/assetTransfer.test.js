@@ -154,17 +154,19 @@ describe('Asset Transfer Basic Tests', () => {
 
         it('should return success on UpdateAsset', async () => {
             let assetTransfer = new AssetTransfer();
-            await assetTransfer.CreateAsset(transactionContext, asset.ID, asset.Color, asset.Size, asset.Owner, asset.AppraisedValue);
+            await assetTransfer.CreateAsset(transactionContext, asset.ID, asset.data);
             
 
             await assetTransfer.UpdateAsset(transactionContext, 'asset1', {Color: 'orange',Size: 10,Owner: 'Me',AppraisedValue: 500,});
             let ret = JSON.parse(await chaincodeStub.getState(asset.ID));
             let expected = {
                 ID: 'asset1',
-                Color: 'orange',
-                Size: 10,
-                Owner: 'Me',
-                AppraisedValue: 500
+                data:{
+                    Color: 'orange',
+                    Size: 10,
+                    Owner: 'Me',
+                    AppraisedValue: 500
+                }
             };
             expect(ret).to.eql(expected);
         });
